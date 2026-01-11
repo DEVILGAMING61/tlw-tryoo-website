@@ -1,0 +1,31 @@
+/* Theme variables inspired by modern hosting dashboards (custom, not copied) */
+:root {
+  --page-bg-gradient: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
+  --surface-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  --card-bg: #ffffff;
+  --card-border: rgba(27, 76, 173, 0.08);
+  --text-primary: #1a202c;
+  --text-muted: #718096;
+  --primary-500: #0066cc;
+  --primary-600: #0088ff;
+  --accent: #06b6d4;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #c53030;
+  --muted: #94a3b8;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+  --shadow-md: 0 6px 20px rgba(2,6,23,0.08);
+  --control-border: #cbd5e0;
+  --control-bg: #ffffff;
+  --mono-font: 'Monaco', 'Courier New', monospace;
+}
+
+/* Utility helpers */
+.theme-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}

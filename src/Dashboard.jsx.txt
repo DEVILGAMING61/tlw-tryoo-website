@@ -1,0 +1,120 @@
+import { useState, useEffect } from 'react';
+import './Dashboard.css';
+import * as api from './mockServerApi';
+
+export default function Dashboard() {
+  const [servers, setServers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ totalServers: 0, totalPlayers: 0, onlineServers: 0 });
+
+  useEffect(() => {
+    let mounted = true;
+    api.fetchServers().then((s) => {
+      if (mounted) {
+        setServers(s);
+        const onlineCount = s.filter(srv => srv.status === 'online').length;
+        setStats({
+          totalServers: s.length,
+          totalPlayers: s.length * 10, // mock calculation
+          onlineServers: onlineCount
+        });
+        setLoading(false);
+      }
+    });
+    return () => (mounted = false);
+  }, []);
+
+  return (
+    <div className="dashboard-root">
+      <header className="dashboard-header">
+        <h1 className="dashboard-title">TLWTroo Hosting</h1>
+        <p className="dashboard-subtitle">Welcome back! Here's your server overview.</p>
+      </header>
+
+      <div className="dashboard-container">
+        {/* Quick Stats */}
+        <section className="dashboard-stats">
+          <div className="stat-card">
+            <div className="stat-label">Total Servers</div>
+            <div className="stat-value">{stats.totalServers}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-label">Online Servers</div>
+            <div className="stat-value">{stats.onlineServers}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-label">Total Players</div>
+            <div className="stat-value">{stats.totalPlayers}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-label">Status</div>
+            <div className="stat-value status-good">Healthy</div>
+          </div>
+        </section>
+
+        {/* Servers Preview */}
+        <section className="dashboard-servers">
+          <div className="section-header">
+            <h2>Your Servers</h2>
+            <a className="btn primary" href="#/servers">Manage All</a>
+          </div>
+
+          {loading ? (
+            <div className="loading">Loading servers…</div>
+          ) : (
+            <div className="server-preview">
+              {servers.length === 0 ? (
+                <div className="empty-state">
+                  <p>No servers yet</p>
+                  <a className="btn primary" href="#/servers">Create your first server</a>
+                </div>
+              ) : (
+                servers.slice(0, 3).map((srv) => (
+                  <div key={srv.id} className="server-card-mini">
+                    <div className="server-header">
+                      <h3>{srv.name}</h3>
+                      <span className={`status-badge status-${srv.status}`}>{srv.status}</span>
+                    </div>
+                    <div className="server-info">
+                      <span>{srv.ram} RAM</span>
+                      <span>{srv.storage} Storage</span>
+                      <span>{srv.players} players</span>
+                    </div>
+                    <a className="btn primary small" href={`#/servers/${srv.id}`}>Open Panel</a>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Quick Links */}
+        <section className="dashboard-links">
+          <h2>Quick Links</h2>
+          <div className="links-grid">
+            <a href="#/servers" className="link-card">
+              <div className="link-icon">📊</div>
+              <div className="link-title">Manage Servers</div>
+              <p>View and manage all your game servers</p>
+            </a>
+            <a href="#/servers" className="link-card">
+              <div className="link-icon">➕</div>
+              <div className="link-title">Create Server</div>
+              <p>Set up a new Minecraft server instantly</p>
+            </a>
+            <a href="#/servers" className="link-card">
+              <div className="link-icon">📁</div>
+              <div className="link-title">File Manager</div>
+              <p>Browse and edit server files</p>
+            </a>
+            <a href="#/servers" className="link-card">
+              <div className="link-icon">⚙️</div>
+              <div className="link-title">Settings</div>
+              <p>Configure your account and servers</p>
+            </a>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

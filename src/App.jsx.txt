@@ -1,0 +1,81 @@
+import './App.css';
+import { useEffect, useState } from 'react';
+import Panel from './Panel';
+import ServerList from './ServerList';
+import Dashboard from './Dashboard';
+
+function App() {
+  const [route, setRoute] = useState(window.location.hash || '#/');
+
+  useEffect(() => {
+    function onHash() {
+      setRoute(window.location.hash || '#/');
+    }
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  // Route: #/servers/:id - Open specific server panel
+  if (route.startsWith('#/servers/') && route !== '#/servers') {
+    const serverId = route.replace('#/servers/', '');
+    return <Panel serverId={serverId} />;
+  }
+
+  // Route: #/servers - Server list page
+  if (route === '#/servers') {
+    return <ServerList />;
+  }
+
+  // Route: #/dashboard - Dashboard home
+  if (route === '#/dashboard' || route === '#/') {
+    return <Dashboard />;
+  }
+
+  // Legacy fallback for #/panel
+  if (route.startsWith('#/panel')) {
+    return <Panel />;
+  }
+
+  // Default home page with marketing content
+  return (
+    <div className="App">
+      <header className="hero">
+        <div className="container">
+          <h1 className="brand">TLWTroo Hosting</h1>
+          <p className="tag">Reliable Minecraft hosting — simple plans, instant servers.</p>
+
+          <div className="plan-card">
+            <h2>Starter Minecraft Server</h2>
+            <ul>
+              <li><strong>RAM:</strong> 8 GB</li>
+              <li><strong>Storage:</strong> 16 GB SSD</li>
+              <li><strong>Player slots:</strong> Unlimited (soft limit depends on modpack/performance)</li>
+              <li><strong>OS:</strong> Ubuntu 22.04</li>
+            </ul>
+            <div className="actions">
+              <a className="btn primary" href="#/dashboard">Get Started</a>
+              <a className="btn" href="#pricing">View details</a>
+            </div>
+          </div>
+
+          <section className="domain-explain">
+            <h3>Domain example</h3>
+            <p>
+              Your public site could be hosted at a domain like <strong>TLWTroo.com</strong>.
+              The server control panel and storefront would use URLs such as
+              <span className="code"> https://TLWTroo.com</span> and
+              <span className="code"> https://panel.TLWTroo.com</span>.
+            </p>
+            <p className="small">
+              How URLs work: the domain (TLWTroo.com) maps to an IP address via DNS. A browser
+              requests that IP and the web server responds with your website files.
+            </p>
+          </section>
+
+        </div>
+      </header>
+    </div>
+  );
+}
+
+export default App;

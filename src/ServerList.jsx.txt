@@ -1,0 +1,74 @@
+import { useEffect, useState } from 'react';
+import './ServerList.css';
+import * as api from './mockServerApi';
+
+export default function ServerList() {
+  const [servers, setServers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('New Server');
+
+  useEffect(() => {
+    let mounted = true;
+    api.fetchServers().then((s) => {
+      if (mounted) {
+        setServers(s);
+        setLoading(false);
+      }
+    });
+    return () => (mounted = false);
+  }, []);
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    const created = await api.createServer({ 
+      name, 
+      ram: '8G', 
+      storage: '16G', 
+      players: 'unlimited' 
+    });
+    setServers((s) => [created, ...s]);
+    setName('New Server');
+  }
+
+  async function handleDelete(id) {
+    await api.deleteServer(id);
+    setServers((s) => s.filter((x) => x.id !== id));
+  }
+
+  return (
+    <div className="servers-root">
+      <div className="servers-card">
+        <div className="servers-header">
+          <h2>TLWTroo — Servers</h2>
+          <a className="btn secondary" href="#/dashboard">← Back to Dashboard</a>
+        </div>
+
+        <form className="create-form" onSubmit={handleCreate}>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Server name" />
+          <button className="btn primary">Create Server</button>
+        </form>
+
+        {loading ? (
+          <div className="muted">Loading servers…</div>
+        ) : (
+          <div className="server-list">
+            {servers.length === 0 && <div className="muted">No servers. Create one to get started!</div>}
+            {servers.map((s) => (
+              <div key={s.id} className="server-row">
+                <div className="server-details">
+                  <div className="server-name">{s.name}</div>
+                  <div className="server-specs">{s.ram} • {s.storage} • {s.players}</div>
+                  <div className={`status-indicator status-${s.status}`}>{s.status}</div>
+                </div>
+                <div className="server-actions">
+                  <a className="btn primary" href={`#/servers/${s.id}`}>Open Panel</a>
+                  <button className="btn danger" onClick={() => handleDelete(s.id)}>Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
